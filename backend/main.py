@@ -9,8 +9,8 @@ load_dotenv()
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
 KIWI_API_HOST = os.getenv("KIWI_API_HOST", "kiwi-com-cheap-flights.p.rapidapi.com")
 
-print("🔑 RAPIDAPI_KEY:", RAPIDAPI_KEY)
-print("🌐 KIWI_API_HOST:", KIWI_API_HOST)
+print(" RAPIDAPI_KEY:", RAPIDAPI_KEY)
+print(" KIWI_API_HOST:", KIWI_API_HOST)
 
 app = FastAPI()
 
@@ -69,7 +69,6 @@ def fetch_kiwi_round_trip(source="Country:GB", destination="City:dubrovnik_hr", 
         return []
 
     data = response.json()
-
     itineraries = data.get("itineraries", [])
     if not itineraries:
         print("⚠️ No itineraries found in response.")
@@ -79,15 +78,15 @@ def fetch_kiwi_round_trip(source="Country:GB", destination="City:dubrovnik_hr", 
     for it in itineraries:
         price_info = it.get("price", {})
         amount = price_info.get("amount")
-        currency = price_info.get("currency")
-        legs = it.get("legs", [])
+        currency_code = price_info.get("currencyCode") or currency.upper()  # ✅ fallback to requested currency
 
+        legs = it.get("legs", []) or []  # ensure list
         dep_time = legs[0].get("departure", {}).get("time") if legs else None
         arr_time = legs[-1].get("arrival", {}).get("time") if legs else None
 
         results.append({
             "price": float(amount) if amount else None,
-            "currency": currency,
+            "currency": currency_code,
             "departure_time": dep_time,
             "arrival_time": arr_time,
             "legs_count": len(legs)
