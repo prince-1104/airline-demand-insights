@@ -4,3 +4,16 @@ backend/venv/
 
 __pycache__/
 *.pyc
+
+node_modules/
+frontend/node_modules/
+build/
+frontend/build/
+
+.env
+*.log
+.DS_Store
+Thumbs.db
+
+coverage/
+*.test.js
