@@ -1,15 +1,18 @@
 import os
 import requests
 from fastapi import FastAPI
-import pandas as pd
-from sample_data import get_airline_data
-from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 
 load_dotenv()
 
-app = FastAPI()
+RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
+KIWI_API_HOST = os.getenv("KIWI_API_HOST", "kiwi-com-cheap-flights.p.rapidapi.com")
 
+print("🔑 RAPIDAPI_KEY:", RAPIDAPI_KEY)
+print("🌐 KIWI_API_HOST:", KIWI_API_HOST)
+
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -18,27 +21,105 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-AVIATIONSTACK_API_KEY = os.getenv("AVIATIONSTACK_API_KEY")
-BASE_URL = os.getenv("BASE_URL")
-
-
 @app.get("/")
 def home():
-    return {"message": "Airline Demand Insights API running!"}
+    return {"message": "Kiwi API backend running!"}
 
-@app.get("/popular-routes")
-def get_popular_routes():
-    response = requests.get(
-        f"{BASE_URL}/flights",
-        params={"access_key": AVIATIONSTACK_API_KEY, "limit": 30}
-    )
-    flights = response.json().get("data", [])
+def fetch_kiwi_round_trip(source="Country:GB", destination="City:dubrovnik_hr", currency="usd"):
+    url = f"https://{KIWI_API_HOST}/round-trip"
 
-    route_count = {}
-    for flight in flights:
-        dep = flight.get("departure", {}).get("airport") or "Unknown"
-        arr = flight.get("arrival", {}).get("airport") or "Unknown"
-        route = f"{dep} → {arr}"
-        route_count[route] = route_count.get(route, 0) + 1
+    headers = {
+        "x-rapidapi-key": RAPIDAPI_KEY,
+        "x-rapidapi-host": KIWI_API_HOST
+    }
 
-    return [{"route": k, "bookings": v} for k, v in route_count.items()][:7]
+    params = {
+        "source": source,
+        "destination": destination,
+        "currency": currency,
+        "locale": "en",
+        "adults": 1,
+        "children": 0,
+        "infants": 0,
+        "handbags": 1,
+        "holdbags": 0,
+        "cabinClass": "ECONOMY",
+        "sortBy": "QUALITY",
+        "sortOrder": "ASCENDING",
+        "applyMixedClasses": True,
+        "allowReturnFromDifferentCity": True,
+        "allowChangeInboundDestination": True,
+        "allowChangeInboundSource": True,
+        "allowDifferentStationConnection": True,
+        "enableSelfTransfer": True,
+        "allowOvernightStopover": True,
+        "enableTrueHiddenCity": True,
+        "enableThrowAwayTicketing": True,
+        "outbound": "SUNDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY,MONDAY,TUESDAY",
+        "transportTypes": "FLIGHT",
+        "contentProviders": "KIWI",
+        "limit": 5
+    }
+
+    response = requests.get(url, headers=headers, params=params)
+    print("DEBUG STATUS:", response.status_code)
+    print("DEBUG RAW RESPONSE (first 300):", response.text[:300])
+
+    if response.status_code != 200:
+        return []
+
+    data = response.json()
+
+    itineraries = data.get("itineraries", [])
+    if not itineraries:
+        print("⚠️ No itineraries found in response.")
+        return []
+
+    results = []
+    for it in itineraries:
+        price_info = it.get("price", {})
+        amount = price_info.get("amount")
+        currency = price_info.get("currency")
+        legs = it.get("legs", [])
+
+        dep_time = legs[0].get("departure", {}).get("time") if legs else None
+        arr_time = legs[-1].get("arrival", {}).get("time") if legs else None
+
+        results.append({
+            "price": float(amount) if amount else None,
+            "currency": currency,
+            "departure_time": dep_time,
+            "arrival_time": arr_time,
+            "legs_count": len(legs)
+        })
+
+    return results
+
+@app.get("/price-trends")
+def price_trends(
+    source: str = "Country:GB",
+    destination: str = "City:dubrovnik_hr",
+    currency: str = "usd"
+):
+    flights = fetch_kiwi_round_trip(source, destination, currency)
+
+    if not flights:
+        return {"message": "No itineraries found"}
+
+    prices = [f["price"] for f in flights if f["price"] is not None]
+    if not prices:
+        return {"message": "No valid prices"}
+
+    avg_price = round(sum(prices) / len(prices), 2)
+    min_price = min(prices)
+    max_price = max(prices)
+
+    return {
+        "source": source,
+        "destination": destination,
+        "avg_price": avg_price,
+        "min_price": min_price,
+        "max_price": max_price,
+        "total_itineraries": len(flights),
+        "flights": flights
+    }
