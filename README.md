@@ -1,22 +1,55 @@
 ✈️ Airline Demand Insights Dashboard
 1️⃣ Project Overview
-Briefly explain what this web app does (fetches airline demand data, shows price trends, etc.).
+This is a full-stack web application that fetches airline booking demand data, processes it, and visualizes useful insights in a simple, interactive dashboard.
 
-2️⃣ Tech Stack
-Backend: FastAPI + Kiwi API
-Frontend: React + Recharts
+You can view:
+Popular Flight Routes
+Price Trends for specific routes
+High-demand routes & destinations
+It’s designed for quick market demand analysis using free/public APIs.
 
+✅ Features
+📊 Popular Flight Routes visualized in a bar chart
+💹 Price Trends for selected routes with a dynamic dropdown
+🥧 High-Demand Routes displayed as a pie chart
+⚡ FastAPI Backend serving REST APIs
+⚛️ React Frontend with Recharts for interactive visualizations
 
-3️⃣ Features
-Popular Routes visualization
-Price Trends visualization
-High-Demand routes Pie chart
+🏗 Tech Stack
+Backend: [FastAPI, Python, Uvicorn]
 
-4️⃣ Installation & Setup
-Clone repo
-Setup backend (FastAPI, install deps, set RAPIDAPI_KEY)
-Setup frontend (npm install && npm start)
+Frontend: [React, Axios, Recharts
 
-5️⃣ How it works
-Backend fetches airline booking data
-Frontend visualizes insights
+Deployment:
+Backend: Render
+Frontend: Vercel
+
+🚀 Installation & Setup
+1️⃣ Clone this repository
+git clone https://github.com/your-username/airline-demand-insights.git
+cd airline-demand-insights
+
+2️⃣ Setup Backend
+pip install -r requirements.txt
+# Set your API key in .env
+RAPIDAPI_KEY=your_api_key
+uvicorn main:app --reload
+
+3️⃣ Setup Frontend
+npm install
+npm start
+
+4️⃣ Access the Dashboard
+
+Backend runs on 
+https://airline-demand-insights.onrender.com/
+API endpoints available:
+https://airline-demand-insights.onrender.com/popular-routes
+https://airline-demand-insights.onrender.com/price-trends?source=london&destination=paris
+           
+Frontend runs on
+https://airline.doptonin.in/
+
+🔄 How it works
+✅ Backend: Fetches airline booking data (routes, pricing, demand) from a free/public API.
+✅ Frontend: Consumes backend APIs and visualizes insights using charts (Bar, Line, Pie).
