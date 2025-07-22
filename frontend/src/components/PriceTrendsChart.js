@@ -66,7 +66,7 @@ const PriceTrendsChart = () => {
         ✈️ Price Trends Visualization
       </h2>
 
-      {/* Dropdown & Refresh */}
+
       <div
         style={{
           display: "flex",
@@ -123,7 +123,7 @@ const PriceTrendsChart = () => {
         </button>
       </div>
 
-      {/* Chart */}
+   
       <div style={{ width: "100%", height: 400 }}>
         {loading ? (
           <p style={{ textAlign: "center", color: "#4f46e5", fontWeight: "600" }}>
