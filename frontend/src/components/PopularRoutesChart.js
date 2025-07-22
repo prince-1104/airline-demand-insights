@@ -15,12 +15,13 @@ const PopularRoutesChart = () => {
   const [routes, setRoutes] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/popular-routes")
+    axios
+      .get(`${backendUrl}/popular-routes`)
       .then((res) => {
         const rawRoutes = res.data.popular_routes || [];
         const formatted = rawRoutes.map((r) => ({
           route: r.route,
-          bookings: r.data?.avg_price || 0 
+          bookings: r.data?.avg_price || 0
         }));
         setRoutes(formatted);
       })

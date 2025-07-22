@@ -27,7 +27,7 @@ const PriceTrendsChart = () => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `http://localhost:8000/price-trends?source=${route.source}&destination=${route.destination}`
+        `${backendUrl}/price-trends?source=${route.source}&destination=${route.destination}`
       );
       const formatted =
         res.data.flights?.map((f, idx) => ({
@@ -64,9 +64,8 @@ const PriceTrendsChart = () => {
           marginBottom: "20px",
         }}
       >
-        ✈️ Price Trends Visualization
+        Price Trends Visualization
       </h2>
-
 
       <div
         style={{
@@ -120,11 +119,10 @@ const PriceTrendsChart = () => {
             (e.target.style.background = "linear-gradient(90deg, #4f46e5, #6366f1)")
           }
         >
-          🔄 Refresh
+          Refresh
         </button>
       </div>
 
-   
       <div style={{ width: "100%", height: 400 }}>
         {loading ? (
           <p style={{ textAlign: "center", color: "#4f46e5", fontWeight: "600" }}>
@@ -132,7 +130,7 @@ const PriceTrendsChart = () => {
           </p>
         ) : priceData.length === 0 ? (
           <p style={{ textAlign: "center", color: "#ef4444", fontWeight: "600" }}>
-            ⚠️ No price data available
+            No price data available
           </p>
         ) : (
           <ResponsiveContainer>
