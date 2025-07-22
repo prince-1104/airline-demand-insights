@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  ResponsiveContainer
 } from "recharts";
 
 const PopularRoutesChart = () => {
@@ -9,7 +15,14 @@ const PopularRoutesChart = () => {
 
   useEffect(() => {
     axios.get("http://localhost:8000/popular-routes")
-      .then((res) => setRoutes(res.data))
+      .then((res) => {
+        const rawRoutes = res.data.popular_routes || [];
+        const formatted = rawRoutes.map((r) => ({
+          route: r.route,
+          bookings: r.data?.avg_price || 0 
+        }));
+        setRoutes(formatted);
+      })
       .catch((err) => console.error("Error fetching routes:", err));
   }, []);
 
