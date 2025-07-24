@@ -24,6 +24,27 @@ function App() {
         ✈ Airline Demand Insights Dashboard
       </h1>
 
+      {/* Info Banner */}
+      <div
+        style={{
+          background: "#fef3c7",
+          color: "#92400e",
+          border: "1px solid #fde68a",
+          borderRadius: "8px",
+          padding: "14px 20px",
+          margin: "0 auto 24px auto",
+          maxWidth: "700px",
+          textAlign: "center",
+          fontWeight: 600,
+          fontSize: "1.1rem",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
+        }}
+      >
+        <h4 style={{margin: 0}}>
+          Please wait a moment ⏳. Responses may take a few minutes because our backend is hosted on Render’s free tier 🕒.
+        </h4>
+      </div>
+
       {/* Dashboard Grid */}
       <div
         style={{
